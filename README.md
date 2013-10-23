@@ -4,7 +4,7 @@ uwsgi-node-rpc-server
 A simple uwsgi-RPC server written in node.js 
 
 write your rpc functions
-^^^^^^^^^^^^^^^^^^^^^^^^
+========================
 
 save it as server.js (eventually change the listening port at the end)
 
@@ -20,14 +20,14 @@ uwsgi.listen(rpc_functions, 3000);
 ```
 
 run your rpc server
-^^^^^^^^^^^^^^^^^^^
+===================
 
 ``` sh
 node server.js
 ```
 
 call functions from your uWSGI applications
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+===========================================
 
 ``` py
 # python
