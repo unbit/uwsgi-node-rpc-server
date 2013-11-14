@@ -33,13 +33,33 @@ exports.listen = function(rpc_functions, port) {
 
 				var func_name = args.shift();
 				var value = rpc_functions[func_name].apply(this, args);
-				// build teh response packet
-				var response = new Buffer(4 + value.length);
-				response.writeUInt8(173, 0);			
-				response.writeUInt16LE(value.length, 1);			
-				response.writeUInt8(0, 3);			
-				response.write(value, 4);
-				socket.write(response, 'utf8', function() { socket.destroy();});
+				// build the response packet
+				// 64bit version
+				if (value.length > 65535) {
+					var str_length = '' + value.length;
+					var content_length = 'CONTENT_LENGTH';
+					var dict_length = 2 + content_length.length + 2 + str_length.length;
+					var response = new Buffer(4 + dict_length);
+					response.writeUInt8(173, 0);
+					response.writeUInt16LE(dict_length, 1);	
+					response.writeUInt8(5, 3);
+					response.writeUInt16LE(content_length.length, 4)
+					response.write(content_length, 6)
+					response.writeUInt16LE(str_length.length, 6 + content_length.length)
+					response.write(str_length, 6 + content_length.length + 2)
+					socket.write(response, 'utf8', function() { 
+						socket.write(value, 'utf8', function() { socket.destroy();});
+					});
+				}
+				// 16bit version
+				else {
+					var response = new Buffer(4 + value.length);
+					response.writeUInt8(173, 0);			
+					response.writeUInt16LE(value.length, 1);			
+					response.writeUInt8(0, 3);			
+					response.write(value, 4);
+					socket.write(response, 'utf8', function() { socket.destroy();});
+				}
 			}
 			return 0;
 		}
